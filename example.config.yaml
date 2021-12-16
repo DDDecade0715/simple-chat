@@ -1,0 +1,49 @@
+
+# app configuration
+app:
+  mode: debug
+  port: 8501
+  readTimeout: 5
+  writeTimeout: 10
+
+# redis configuration
+redis:
+  db: 0
+  addr: 127.0.0.1:6379
+  password:
+
+# mysql connect configuration
+database:
+  driver: mysql
+  protocol: tcp
+  host: 127.0.0.1
+  port: 3306
+  user: root
+  password: 123456
+  name: test
+  prefix:
+  runMode: debug
+  maxOpens: 100
+  maxIdles: 10
+  maxLifetime: 86400
+
+amqp:
+  url: amqp://username:password@127.0.0.1:5672/
+  config:
+    channels:
+      default:
+        exchange:
+        queues: default_queue
+        key:
+      test:
+        exchange:
+        queues: test_exchange
+        key:
+
+jwt:
+  secret: my-secret
+  issuer: zhan
+  expire: 3h0m0s
+
+elaticsearch:
+  host: http://username:password@127.0.0.1:9200/
