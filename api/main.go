@@ -18,10 +18,10 @@ import (
 func init() {
 	global.GVIPER = initialize.InitViper()                  //初始化viper
 	global.GLOG = initialize.InitLogger("api", "./api/log") //初始化日志
-	global.GREDIS = initialize.InitRedis()                  //初始化redis
-	global.GDB = initialize.InitDB()                        //初始化数据库
-	global.GRABBITMQ = initialize.InitRabbitMQ()            //初始化RabbitMQ
-	global.GES = initialize.InitElasticsearch()             //初始化Elasticsearch
+	//global.GREDIS = initialize.InitRedis()                  //初始化redis
+	global.GDB = initialize.InitDB() //初始化数据库
+	//global.GRABBITMQ = initialize.InitRabbitMQ()            //初始化RabbitMQ
+	//global.GES = initialize.InitElasticsearch()             //初始化Elasticsearch
 }
 
 func Api() {
