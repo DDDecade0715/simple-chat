@@ -168,8 +168,8 @@ export default {
       });
     }, 1000);
   },
-  destroyed() {},
   methods: {
+    //获取联系人
     getUserContacts(im) {
       if (this.user.id != 0) {
         API.getContacts().then((res) => {
@@ -225,9 +225,13 @@ export default {
         im.initContacts(this.contacts);
       }
     },
+
+    //切换聊天联系人
     handleChangeContact(c, i) {
       Contact.handleChangeContact(c, i);
     },
+
+    //点击消息
     handleClickMessage(event, key, message, instance) {
       let that = this;
       //预览图片
@@ -241,18 +245,24 @@ export default {
         Message.handleMessageVideo(message, that);
       }
     },
+
+    //切换导航栏
     handleChangeMenu() {
       //切换导航栏
       this.$refs.IMUI.closeDrawer();
     },
+
+    //点击自己头像
     handleMenuAvatarClick() {
       //自己头像点击事件
       this.userInfoBox = !this.userInfoBox;
     },
+
     //获取联系人发送的消息
     handlePullMessages(contact, next) {
       Contact.getContactMessage(contact, next, this);
     },
+
     //发送消息
     handleSend(message, next, file) {
       Message.handleMessage(message, file, this);
@@ -267,13 +277,19 @@ export default {
         next({ status: "failed" });
       }
     },
+
+
     userInfoClose() {
       this.userInfoBox = !this.userInfoBox;
     },
+
+
     userInfoEdit(params) {
       this.user.displayName = params.displayName;
       this.user.avatar = params.avatar;
     },
+
+
     changeDrawer(contact) {
       let IMUI = this.$refs.IMUI;
       if (IMUI.drawerVisible === true) {
