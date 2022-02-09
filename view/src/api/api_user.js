@@ -51,5 +51,9 @@ export default {
   //获取视频的url
   getVideoUrl: params => {
     return API.POST('im/get_message_info', params);
+  },
+  //保存消息记录
+  saveMessage: params => {
+    return API.POST('im/save_message', params);
   }
 }

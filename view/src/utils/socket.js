@@ -22,11 +22,10 @@ let createSocket = url => { //创建socket
 }
 let sendMsg = (data) => { //发送数据,接收数据
     if (socket.readyState === 1) {
-        // globalCallback = callback;
-        sendData = data;
-
         data = JSON.stringify(data);
         socket.send(data);
+        console.log('socket发送成功')
+        return true;
     } else {
         setTimeout(() => {
             console.log('等待socket链接成功')

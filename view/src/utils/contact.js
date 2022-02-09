@@ -1,4 +1,16 @@
 import API from "../api/api_user";
+
+//获取用户联系人
+let getUserContact = function (){
+    API.getContacts()
+}
+
+//获取群组联系人
+let getGroupContact = function (){
+    API.getGroupContacts()
+}
+
+
 //切换联系人
 let handleChangeContact = function (contact, instance) {
     instance.updateContact({
@@ -8,6 +20,7 @@ let handleChangeContact = function (contact, instance) {
     instance.closeDrawer();
 }
 
+//切换联系人后获取历史记录
 let getContactMessage = function (contact, next, that) {
     //从后端请求消息数据，包装成下面的样子
     let params = { contact_id: contact.id, type: contact.type };

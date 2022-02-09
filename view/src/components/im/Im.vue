@@ -1,23 +1,5 @@
 <template>
   <div class="imui-center">
-    <vue-particles
-      color="#fff"
-      :particleOpacity="0.7"
-      :particlesNumber="60"
-      shapeType="circle"
-      :particleSize="4"
-      linesColor="#fff"
-      :linesWidth="1"
-      :lineLinked="true"
-      :lineOpacity="0.4"
-      :linesDistance="150"
-      :moveSpeed="2"
-      :hoverEffect="true"
-      hoverMode="grab"
-      :clickEffect="true"
-      clickMode="push"
-    >
-    </vue-particles>
     <div class="chat-box">
       <lemon-imui
         ref="IMUI"
@@ -29,8 +11,6 @@
         @change-contact="handleChangeContact"
         @message-click="handleClickMessage"
         :theme="theme"
-        width="850px"
-        height="600px"
       >
         <template #message-title="contact">
           <span class="lemon-container__displayname">{{
@@ -80,6 +60,7 @@ import API from "../../api/api_user";
 import UserFormVue from "../userinfo/UserForm.vue";
 import ContactInfoVue from "../contactInfo/ContactInfo.vue";
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
+
 export default {
   components: {
     UserFormVue,
@@ -101,6 +82,8 @@ export default {
       //隐藏用户编辑框
       userInfoBox: false,
       imageSuccess: true,
+      nextSuccess: true,
+      socketSuccess: true,
       //某个群的信息
       groupInfo: {},
       //预览图片
@@ -121,18 +104,29 @@ export default {
     };
   },
   mounted() {
-    const { IMUI } = this.$refs;
-    socket.createSocket(socket.wsUrl);
-    //获取登录用户信息
-    User.getUserInfo(this);
-    //获取登录用户的联系人列表
-    let that = this;
-    setTimeout(function () {
-      that.getUserContacts(IMUI);
-    }, 1000);
-    //初始化表情包。
-    // IMUI.initEmoji(...);
-    setTimeout(() => {
+    this.initIm();
+  },
+  methods: {
+    //初始化
+    async initIm() {
+      const i = this.$refs.IMUI;
+      //初始化socket
+      socket.createSocket(socket.wsUrl);
+      //获取登录用户信息
+      User.getUserInfo(this);
+      //获取登录用户的联系人列表
+      this.getUserContacts(i);
+      //获取消息
+      setTimeout(() => {
+        this.getImMessage(i);
+      }, 500);
+
+      //初始化表情包。
+      // IMUI.initEmoji(...);
+    },
+
+    //获取消息
+    getImMessage(IMUI) {
       socket.getMsg((event) => {
         let data = JSON.parse(event.data);
         if (data.type == "add_member" || data.type == "create_group") {
@@ -166,10 +160,9 @@ export default {
           IMUI.appendMessage(data, true);
         }
       });
-    }, 1000);
-  },
-  methods: {
-    //获取联系人
+    },
+
+    //获取联系人列表
     getUserContacts(im) {
       if (this.user.id != 0) {
         API.getContacts().then((res) => {
@@ -265,30 +258,39 @@ export default {
 
     //发送消息
     handleSend(message, next, file) {
+      //通过接口存储消息
       Message.handleMessage(message, file, this);
-      //如果判断失败
-      //执行到next消息会停止转圈，如果接口调用失败，可以修改消息的状态 next({status:'failed'});
-      if (this.imageSuccess) {
-        setTimeout(() => {
+      //暂停一秒后发送socket
+      setTimeout(() => {
+        if (this.imageSuccess && this.nextSuccess) {
           next();
-          socket.sendMsg(message);
-        }, 1000);
-      } else {
-        next({ status: "failed" });
-      }
+          //发送
+          if (!socket.sendMsg(message)) {
+            //定时发送
+            var t1 = setInterval(() => {
+              this.socketSuccess = socket.sendMsg(message);
+            }, 500);
+            if (this.socketStatus) {
+              clearInterval(t1);
+            }
+          }
+        } else {
+          //执行到next消息会停止转圈，如果接口调用失败，可以修改消息的状态 next({status:'failed'});
+          next({ status: "failed" });
+          this.imageSuccess = true;
+          this.nextSuccess = true;
+        }
+      }, 1000);
     },
-
 
     userInfoClose() {
       this.userInfoBox = !this.userInfoBox;
     },
 
-
     userInfoEdit(params) {
       this.user.displayName = params.displayName;
       this.user.avatar = params.avatar;
     },
-
 
     changeDrawer(contact) {
       let IMUI = this.$refs.IMUI;
@@ -310,12 +312,21 @@ export default {
 };
 </script>
 <style lang="stylus">
+* {
+  margin: 0;
+}
+
 .imui-center {
-  background-image: linear-gradient(-180deg, #1a1454 0%, #0e81a5 100%);
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100%;
-  text-align: center;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(45deg, palegoldenrod, pink, plum);
+  // animation: hueRotate 10s infinite alternate;
+}
+
+@keyframes hueRotate {
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }
 
 .chat-box {
@@ -337,7 +348,7 @@ export default {
   border-radius: 4px;
   padding: 0 8px;
 
-  &:active {
+  &, :active {
     background: #999;
   }
 }

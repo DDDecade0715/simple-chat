@@ -118,6 +118,38 @@ func SaveMessage(value *models.MessageChat) {
 	}
 }
 
+type MessageInfo struct {
+	MessageId string          `json:"id" `
+	ContactId string          `json:"toContactId"`
+	Type      string          `json:"type"`
+	Status    string          `json:"status"`
+	SendTime  int64           `json:"sendTime"`
+	FromUser  models.FromUser `json:"fromUser"`
+	Content   string          `json:"content"`
+}
+
+//SaveMessageByInterface 通过接口保存聊天记录
+func SaveMessageByInterface(c *gin.Context) {
+	var form MessageInfo
+	if err := c.Bind(&form); err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	}
+	//存储消息
+	messageChat := &models.MessageChat{
+		Content:     form.Content,
+		FromUser:    &form.FromUser,
+		SendTime:    form.SendTime,
+		Status:      form.Status,
+		ToContactId: form.ContactId,
+		Type:        form.Type,
+		Id:          form.MessageId,
+	}
+	SaveMessage(messageChat)
+	var result interface{}
+	response.OkWithData("success", result, c)
+}
+
 type ChatContact struct {
 	ContactId string `json:"contact_id" binding:"required"`
 	Type      string `json:"type" binding:"required"`

@@ -32,3 +32,7 @@ func UploadChatImage(c *gin.Context) {
 func GetMessageInfoById(c *gin.Context) {
 	imService.GetMessageInfoById(c)
 }
+
+func SaveMessage(c *gin.Context) {
+	imService.SaveMessageByInterface(c)
+}

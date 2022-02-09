@@ -2,6 +2,7 @@ import API from "../api/api_user";
 import Common from "../utils/common";
 
 let handleMessage = function (message, file, that) {
+    //如果消息是文件或图片，就上传
     if (file && (message.type == 'image' || message.type == 'file')) {
         let config = {
             headers: {
@@ -18,7 +19,16 @@ let handleMessage = function (message, file, that) {
             }
         });
     }
+    //通过接口存储消息
+    // console.log(message);
+    API.saveMessage(message).then((res)=>{
+        if(res.code != 0){
+            that.nextSuccess = false;
+        }
+    })
+
 }
+//获取视频地址
 let handleMessageVideo = function (message, that) {
     let url = message.content;
     if (!url) {
