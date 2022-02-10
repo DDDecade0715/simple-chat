@@ -245,9 +245,15 @@ func (message *ClientMessage) ReadMessage(msg []byte) error {
 			global.GLOG.Errorf("读取到客户端的信息,用户聊天图片消息为空,%v", err.Error())
 			return err
 		}
+		//获取存储后的图片地址
+		chatImage, _ := models.FindChatImage(&models.ChatImage{
+			MessageId: Chat.Id,
+		})
+		Chat.Content = chatImage.Url
 		imService.SaveMessage(Chat)
+		imageMsg, _ := json.Marshal(&Chat)
 		//用户聊天消息管道
-		ClientManager.CommonChan <- msg
+		ClientManager.CommonChan <- imageMsg
 	case "file":
 		global.GLOG.Infof("读取到客户端的信息,用户文件消息,%v", string(msg))
 		Chat := &models.MessageChat{}

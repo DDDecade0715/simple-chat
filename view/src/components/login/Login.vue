@@ -24,7 +24,8 @@
               <input type="password" placeholder="密码" v-model="password" />
             </div>
             <div class="inputBox">
-              <input type="submit" value="登录" @click="login" />
+              <el-button round @click="login" :loading="isBtnLoading">登录</el-button>
+              <!-- <el-button type="submit" value="登录" @click="login" /> -->
             </div>
           </form>
         </div>
@@ -310,7 +311,17 @@ section .color:nth-child(3) {
 }
 
 /* 登录按钮样式 */
-.form .inputBox input[type='submit'] {
+.form .inputBox button[type='button'] {
+  width: 100%;
+  padding: 10px 20px;
+  outline: none;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 16px;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
   background: #fff;
   color: #666;
   max-width: 100px;

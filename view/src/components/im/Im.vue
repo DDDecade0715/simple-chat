@@ -160,6 +160,7 @@ export default {
           };
           this.contacts.push(contact);
         } else {
+          console.log(data);
           IMUI.appendMessage(data, true);
         }
       });
