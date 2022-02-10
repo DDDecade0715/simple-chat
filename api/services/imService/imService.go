@@ -153,6 +153,15 @@ func SaveMessageByInterface(c *gin.Context) {
 type ChatContact struct {
 	ContactId string `json:"contact_id" binding:"required"`
 	Type      string `json:"type" binding:"required"`
+	Page      int8   `json:"page" binding:"required"`
+}
+
+type ChatContactMessage struct {
+	Page      int8                  `json:"page"`
+	Count     int8                  `json:"count"`
+	PageSize  int8                  `json:"page_size"`
+	Data      []*models.MessageChat `json:"data"`
+	TotalPage int8                  `json:"total_page"`
 }
 
 //GetMessages 获取联系人聊天记录
@@ -163,14 +172,14 @@ func GetMessages(c *gin.Context) {
 		response.FailWithMessage(err.Error(), c)
 		return
 	}
-	switch form.Type {
-	case "group":
+	var result []*models.MessageChat
+	var res *models.MessagePageInfo
+	if form.Type == "group" {
 		whereFrom := &models.Message{
 			ToContactId: form.ContactId,
 		}
-		res, _ := models.FindGroupMessages(whereFrom)
-		var result []*models.MessageChat
-		for _, v := range res {
+		res, _ = models.FindGroupMessages(whereFrom, form.Page)
+		for _, v := range res.Data {
 			//发送人组装
 			FromByte := []byte(v.FromUser)
 			var From *models.FromUser
@@ -210,9 +219,7 @@ func GetMessages(c *gin.Context) {
 			}
 			result = append(result, MessagesChat)
 		}
-		response.OkWithData("success", result, c)
-		return
-	case "user":
+	} else {
 		value := &models.User{}
 		value.ID = uint(userId.(int64))
 		user, err := models.FindUser(value)
@@ -229,9 +236,8 @@ func GetMessages(c *gin.Context) {
 			FromUserId:  form.ContactId,
 			ToContactId: user.Uuid,
 		}
-		res, _ := models.FindMessages(whereFrom, whereContact)
-		var result []*models.MessageChat
-		for _, v := range res {
+		res, _ = models.FindMessages(whereFrom, whereContact, form.Page)
+		for _, v := range res.Data {
 			//发送人组装
 			FromByte := []byte(v.FromUser)
 			var From *models.FromUser
@@ -271,9 +277,16 @@ func GetMessages(c *gin.Context) {
 			}
 			result = append(result, MessagesChat)
 		}
-		response.OkWithData("success", result, c)
-		return
 	}
+	chatContactMessage := &ChatContactMessage{
+		Page:      res.Page,
+		Count:     res.Count,
+		PageSize:  res.PageSize,
+		Data:      result,
+		TotalPage: res.TotalPage,
+	}
+	response.OkWithData("success", chatContactMessage, c)
+	return
 }
 
 type FileInfo struct {

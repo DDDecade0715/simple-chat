@@ -81,6 +81,7 @@ export default {
       contacts: [],
       //隐藏用户编辑框
       userInfoBox: false,
+      //消息发送成功
       imageSuccess: true,
       nextSuccess: true,
       socketSuccess: true,
@@ -101,6 +102,8 @@ export default {
           },
         ],
       },
+      //获取消息历史记录
+      page: 0,
     };
   },
   mounted() {
@@ -221,6 +224,7 @@ export default {
 
     //切换聊天联系人
     handleChangeContact(c, i) {
+      this.page = 0;
       Contact.handleChangeContact(c, i);
     },
 
@@ -253,6 +257,7 @@ export default {
 
     //获取联系人发送的消息
     handlePullMessages(contact, next) {
+      this.page += 1;
       Contact.getContactMessage(contact, next, this);
     },
 
@@ -347,10 +352,6 @@ export default {
   display: inline-block;
   border-radius: 4px;
   padding: 0 8px;
-
-  &, :active {
-    background: #999;
-  }
 }
 
 .lemon-message-image .lemon-message__content img {

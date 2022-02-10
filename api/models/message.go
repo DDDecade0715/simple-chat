@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gin-derived/global"
 	"github.com/jinzhu/gorm"
+	"math"
 	"time"
 )
 
@@ -95,10 +96,30 @@ func FindMessage(value *Message) (Message, error) {
 	return result, err
 }
 
-func FindMessages(whereFrom *Message, whereContact *Message) ([]*Message, error) {
+func FindMessages(whereFrom *Message, whereContact *Message, page int8) (*MessagePageInfo, error) {
+	var limit int8
+	limit = 50
+	//查条数
+	var count int8
+	global.GDB.Model(&Message{}).Where(whereFrom).Or(whereContact).Count(&count)
+	var totalPage float64
+	totalPage = float64(count) / float64(limit)
+	//偏移量
+	offset := count - (page * limit)
+	//如果小于0就那之前剩的条数
+	if offset < 0 {
+		limit = count - ((page - 1) * limit)
+	}
 	var result []*Message
-	err := global.GDB.Where(whereFrom).Or(whereContact).Order("send_time asc").Limit(50).Find(&result).Error
-	return result, err
+	err := global.GDB.Where(whereFrom).Or(whereContact).Order("send_time asc").Offset(offset).Limit(50).Find(&result).Error
+	messagePageInfo := &MessagePageInfo{
+		Page:      page,
+		Count:     count,
+		PageSize:  limit,
+		Data:      result,
+		TotalPage: int8(math.Ceil(totalPage)),
+	}
+	return messagePageInfo, err
 }
 
 func GetGroupsMessage(whereFrom *Message) (contactsMessage *ContactsMessage, err error) {
@@ -108,8 +129,36 @@ func GetGroupsMessage(whereFrom *Message) (contactsMessage *ContactsMessage, err
 	return
 }
 
-func FindGroupMessages(whereFrom *Message) ([]*Message, error) {
+type MessagePageInfo struct {
+	Page      int8       `json:"page"`
+	Count     int8       `json:"count"`
+	PageSize  int8       `json:"page_size"`
+	Data      []*Message `json:"data"`
+	TotalPage int8       `json:"total_page"`
+}
+
+func FindGroupMessages(whereFrom *Message, page int8) (*MessagePageInfo, error) {
+	var limit int8
+	limit = 50
+	//查条数
+	var count int8
+	global.GDB.Model(&Message{}).Where(whereFrom).Count(&count)
+	var totalPage float64
+	totalPage = float64(count) / float64(limit)
+	//偏移量
+	offset := count - (page * limit)
+	//如果小于0就那之前剩的条数
+	if offset < 0 {
+		limit = count - ((page - 1) * limit)
+	}
 	var result []*Message
-	err := global.GDB.Where(whereFrom).Order("send_time asc").Limit(50).Find(&result).Error
-	return result, err
+	err := global.GDB.Where(whereFrom).Order("send_time asc").Offset(offset).Limit(limit).Find(&result).Error
+	messagePageInfo := &MessagePageInfo{
+		Page:      page,
+		Count:     count,
+		PageSize:  limit,
+		Data:      result,
+		TotalPage: int8(math.Ceil(totalPage)),
+	}
+	return messagePageInfo, err
 }

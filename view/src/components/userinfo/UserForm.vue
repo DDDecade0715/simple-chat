@@ -57,8 +57,8 @@ export default {
           localStorage.setItem("access-user", JSON.stringify(info));
           that.$emit("userInfoEdit", info);
           that.$emit("userInfoClose");
-        }else{
-          that.$message.error(res.msg)
+        } else {
+          that.$message.error(res.msg);
         }
       });
     },
@@ -106,6 +106,7 @@ export default {
 .demo-drawer__content {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
 }
 .demo-drawer__content form {
