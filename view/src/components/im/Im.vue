@@ -81,10 +81,6 @@ export default {
       contacts: [],
       //隐藏用户编辑框
       userInfoBox: false,
-      //消息发送成功
-      imageSuccess: true,
-      nextSuccess: true,
-      socketSuccess: true,
       //某个群的信息
       groupInfo: {},
       //预览图片
@@ -265,28 +261,7 @@ export default {
     //发送消息
     handleSend(message, next, file) {
       //通过接口存储消息
-      Message.handleMessage(message, file, this);
-      //暂停一秒后发送socket
-      setTimeout(() => {
-        if (this.imageSuccess && this.nextSuccess) {
-          next();
-          //发送
-          if (!socket.sendMsg(message)) {
-            //定时发送
-            var t1 = setInterval(() => {
-              this.socketSuccess = socket.sendMsg(message);
-            }, 500);
-            if (this.socketStatus) {
-              clearInterval(t1);
-            }
-          }
-        } else {
-          //执行到next消息会停止转圈，如果接口调用失败，可以修改消息的状态 next({status:'failed'});
-          next({ status: "failed" });
-          this.imageSuccess = true;
-          this.nextSuccess = true;
-        }
-      }, 1000);
+      Message.handleMessage(message, file, next, socket);
     },
 
     userInfoClose() {
