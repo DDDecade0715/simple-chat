@@ -4,9 +4,9 @@
       <el-row :gutter="20">
         <div class="info-box">
           <div class="grid-content">
-            <el-button class="button-icon" @click="open"
+            <span class="lemon-avatar contact_avatar" @click="open"
               ><i class="el-icon-plus"></i
-            ></el-button>
+            ></span>
             <div class="displayName">添加</div>
           </div>
         </div>
@@ -164,6 +164,8 @@ export default {
 }
 
 .el-header {
+  width: 100%;
+
   .el-row {
     margin-bottom: 20px;
 
