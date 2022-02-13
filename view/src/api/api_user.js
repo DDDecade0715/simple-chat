@@ -25,6 +25,10 @@ export default {
   uploadChatImage: (params, config) => {
     return API.POSTIMAGE('im/upload_chat_image', params, config)
   },
+  //上传聊天视频
+  uploadChatVideo: (params, config) => {
+    return API.POSTIMAGE('im/upload_chat_video', params, config)
+  },
   //创建群
   createGroup: params => {
     return API.POST('im/create_group', params)

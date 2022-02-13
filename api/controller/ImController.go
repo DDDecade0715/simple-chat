@@ -29,6 +29,10 @@ func UploadChatImage(c *gin.Context) {
 	imService.UploadChatImage(c)
 }
 
+func UploadChatVideo(c *gin.Context) {
+	imService.UploadChatVideo(c)
+}
+
 func GetMessageInfoById(c *gin.Context) {
 	imService.GetMessageInfoById(c)
 }

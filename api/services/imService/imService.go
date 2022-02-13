@@ -5,11 +5,13 @@ import (
 	"gin-derived/api/models"
 	"gin-derived/global"
 	"gin-derived/pkg/app/response"
+	"gin-derived/pkg/file"
 	"gin-derived/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
 	"io"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -453,6 +455,18 @@ func UploadChatImage(c *gin.Context) {
 		return
 	}
 	response.OkWithData("success", value, c)
+}
+
+func UploadChatVideo(c *gin.Context) {
+	// 合并
+	res, err := file.MergeChunk(c)
+	if err != nil {
+		response.FailWithMessage(err.Error(), c)
+		return
+	} else {
+		// 保存上传节点
+		response.OkWithData("success", strconv.Itoa(res), c)
+	}
 }
 
 type FormMessage struct {
