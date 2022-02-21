@@ -3,9 +3,9 @@ package imService
 import (
 	"encoding/json"
 	"gin-derived/api/models"
+	"gin-derived/api/services/messageService"
 	"gin-derived/global"
 	"gin-derived/pkg/app/response"
-	"gin-derived/pkg/file"
 	"gin-derived/pkg/jwt"
 	"github.com/gin-gonic/gin"
 	uuid "github.com/satori/go.uuid"
@@ -459,7 +459,7 @@ func UploadChatImage(c *gin.Context) {
 
 func UploadChatVideo(c *gin.Context) {
 	// 合并
-	res, err := file.MergeChunk(c)
+	res, err := messageService.MergeChunk(c)
 	if err != nil {
 		response.FailWithMessage(err.Error(), c)
 		return

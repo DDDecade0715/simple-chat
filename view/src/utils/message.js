@@ -2,7 +2,6 @@ import API from "../api/api_user";
 import Common from "../utils/common";
 
 let handleMessage = async function (message, file, next, socket) {
-    console.log(message);
     //优先判断消息类型
     switch (message.type) {
         case 'image':
@@ -25,8 +24,13 @@ let handleMessage = async function (message, file, next, socket) {
             });
             break;
         case 'file':
-            //上传文
-            await uploadVideo(file);
+            //上传文件
+            var u = await uploadVideo(file, message)
+            if (!u) {
+                //执行到next消息会停止转圈，如果接口调用失败，可以修改消息的状态 next({status:'failed'});
+                next({ status: "failed" });
+                return false;
+            }
             break;
     }
     //通过接口存储消息
@@ -83,15 +87,14 @@ let videoShow = function (message, url, that) {
 }
 
 
-// 每个文件切片大小定为10M
-var chunksize = 1024 * 1024 * 5;
-// 定义上传总切片数
-var chunktotal;
-// 设置上传成功数量记录
-var successTotal = 0
+let uploadVideo = async function (file, message) {
+    // 每个文件切片大小定为5M
+    var chunksize = 1024 * 1024 * 5;
+    // 定义上传总切片数
+    var chunktotal;
+    // 设置上传成功数量记录
+    var successTotal = 0
 
-let uploadVideo = function (file) {
-    // var file = document.getElementById("file").files[0];
     var start = 0;
     var end;
     var index = 0;
@@ -117,13 +120,15 @@ let uploadVideo = function (file) {
         formData.append("chunktotal", chunktotal);
         // 文件总大小
         formData.append("filesize", filesize)
+        //业务需要
+        formData.append("chat_id", message.id)
         var config = {
             headers: {
                 "Content-Type":
                     "multipart/form-data; boundary=----WebKitFormBoundaryVCFSAonTuDbVCoAN",
             },
         };
-        API.uploadChatVideo(formData, config).then((res) => {
+        await API.uploadChatVideo(formData, config).then((res) => {
             if (res.code == 0) {
                 successTotal = successTotal + 1
             }
@@ -131,11 +136,10 @@ let uploadVideo = function (file) {
         start = end;
         index++;
     }
-    console.log("上传数：", successTotal)
-    // if (chunktotal == successTotal) {
-    //     alert("上传成功")
-    // } else {
-    //     alert("上传失败")
-    // }
+    if (successTotal != chunktotal) {
+        return false;
+    } else {
+        return true;
+    }
 }
 export default { handleMessage, handleMessageVideo }
