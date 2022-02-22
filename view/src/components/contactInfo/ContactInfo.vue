@@ -84,7 +84,7 @@
 
 <script>
 import SelectContactVue from "../selectContact/SelectContact.vue";
-import API from "../../api/api_user";
+import API from "../../api/api";
 export default {
   components: { SelectContactVue },
   data() {

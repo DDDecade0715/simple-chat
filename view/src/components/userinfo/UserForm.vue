@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import API from "../../api/api_user";
+import API from "../../api/api";
 export default {
   data: () => ({
     name: "",

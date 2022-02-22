@@ -118,7 +118,7 @@
 </template>
 
 <script>
-import API from "../../api/api_user";
+import API from "../../api/api";
 import socket from "../../utils/socket";
 export default {
   data() {

@@ -1,26 +1,69 @@
-let user = JSON.parse(localStorage.getItem('access-user'));
 let wsUrl = process.env.WS_URL;
 let socket = null;
 let lockReconnet = false; //避免重复连接
 let isReconnet = false;
-let globalCallback = null, sendData = null; //把要发送给socket的数据和处理socket返回数据的回调保存起来
-let createSocket = url => { //创建socket
+
+//连接
+let connetSocket = () => {
+    //判断用户是否登陆
+    var user = JSON.parse(localStorage.getItem('access-user'))
     if (!user) {
-        return false;
+        return false
     }
+    //实例websocket
     try {
         if ('WebSocket' in window) {
-            socket = new WebSocket(url + "?token=" + user.token)
+            socket = new WebSocket(wsUrl + "?token=" + user.token)
         } else if ('MozWebSocket' in window) {
-            socket = new MozWebSocket(url + "?token=" + user.token)
+            socket = new MozWebSocket(wsUrl + "?token=" + user.token)
         }
-        //Vue.prototype.socket = socket //需要主动关闭的话就可以直接调用this.socket.close()进行关闭，不需要的话这个可以去掉
         initSocket()
     } catch (e) {
-        reconnet(url)
+        reconnetSocket()
     }
 }
-let sendMsg = (data) => { //发送数据,接收数据
+
+//重新连接
+let reconnetSocket = () => {
+    if (lockReconnet) {
+        return false
+    }
+    isReconnet = true
+    lockReconnet = true
+
+    setTimeout(() => {
+        connetSocket()
+        lockReconnet = false
+    }, 1000)
+}
+
+//初始化websocket
+let initSocket = function () {
+    socket.onopen = () => {
+        //heartCheck.reset().start() //后端说暂时不需要做心跳检测
+        //执行全局回调函数
+        if (isReconnet) {
+            console.log('websocket 重新连接了')
+            isReconnet = false
+        } else {
+            console.log('websocket 连接成功')
+        }
+    }
+
+    socket.onerror = () => {
+        console.log('websocket服务出错了 ---onerror');
+        reconnetSocket()
+    }
+
+    socket.onclose = () => {
+        console.log('websocket服务关闭了 ---onclose');
+        reconnetSocket()
+    }
+}
+
+
+//发送数据
+let sendMsg = (data) => {
     if (socket.readyState === 1) {
         data = JSON.stringify(data);
         socket.send(data);
@@ -34,44 +77,16 @@ let sendMsg = (data) => { //发送数据,接收数据
         return false
     }
 }
-let initSocket = () => { //初始化websocket
-    socket.onopen = () => {
-        console.log('socket连接成功')
-        //heartCheck.reset().start() //后端说暂时不需要做心跳检测
 
-        if (isReconnet) {//执行全局回调函数
-            //console.log('websocket重新连接了')
-            isReconnet = false
-        }
-    }
-
-    // socket.onmessage = (ev) => {
-    //     console.log(ev.data, '连接正常')
-    //     //heartCheck.reset().start() //后端说暂时不需要做心跳检测
-    // }
-
-    socket.onerror = () => {
-        console.log('websocket服务出错了---onerror');
-        reconnet(wsUrl)
-    }
-
-    socket.onclose = () => {
-        console.log('websocket服务关闭了+++onclose');
-        reconnet(wsUrl)
+//接收数据
+let getMsg = (callback) => {
+    socket.onmessage = ev => {
+        callback && callback(ev)
     }
 }
-let reconnet = url => { //重新连接websock函数
-    if (lockReconnet)
-        return false
 
-    isReconnet = true;
-    lockReconnet = true
-    setTimeout(() => {
-        createSocket(url)
-        lockReconnet = false
-    }, 2000)
-}
-let heartCheck = { //心跳检测
+//心跳检测
+let heartCheck = {
     timeout: 60 * 1000,
     timeoutObj: null,
     serverTimeoutObj: null,
@@ -91,9 +106,12 @@ let heartCheck = { //心跳检测
         }, this.timeout)
     }
 }
-let getMsg = (callback) => {
-    socket.onmessage = ev => {
-        callback && callback(ev)
+
+let getSocketStatus = function () {
+    if (socket.readyState != 1) {
+        return false;
     }
+    return true;
 }
-export default { sendMsg, getMsg, createSocket, wsUrl }
+
+export default { sendMsg, getMsg, connetSocket, getSocketStatus }

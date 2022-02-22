@@ -2,6 +2,7 @@
   <div class="imui-center">
     <div class="chat-box">
       <lemon-imui
+        v-loading="loading"
         ref="IMUI"
         :user="this.user"
         @pull-messages="handlePullMessages"
@@ -55,11 +56,12 @@ import socket from "../../utils/socket";
 import Contact from "../../utils/contact";
 import User from "../../utils/user";
 import Message from "../../utils/message";
-import API from "../../api/api_user";
+import API from "../../api/api";
 //使用了element样式
 import UserFormVue from "../userinfo/UserForm.vue";
 import ContactInfoVue from "../contactInfo/ContactInfo.vue";
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
+import emoji from "../../assets/emoji";
 
 export default {
   components: {
@@ -100,6 +102,8 @@ export default {
       },
       //获取消息历史记录
       page: 0,
+      //加载
+      loading: true,
     };
   },
   mounted() {
@@ -110,22 +114,28 @@ export default {
     async initIm() {
       const i = this.$refs.IMUI;
       //初始化socket
-      socket.createSocket(socket.wsUrl);
+      socket.connetSocket();
       //获取登录用户信息
       User.getUserInfo(this);
       //获取登录用户的联系人列表
       this.getUserContacts(i);
-      //获取消息
-      setTimeout(() => {
-        this.getImMessage(i);
-      }, 500);
+
+      var t2 = setInterval(() => {
+        // console.log(socket.getSocketStatus());
+        this.loading = !socket.getSocketStatus();
+        if (socket.getSocketStatus()) {
+          //获取消息
+          this.getImMessage();
+        }
+      }, 2000);
 
       //初始化表情包。
-      // IMUI.initEmoji(...);
+      i.initEmoji(emoji);
     },
 
     //获取消息
-    getImMessage(IMUI) {
+    getImMessage() {
+      var i = this.$refs.IMUI;
       socket.getMsg((event) => {
         let data = JSON.parse(event.data);
         if (data.type == "add_member" || data.type == "create_group") {
@@ -148,7 +158,7 @@ export default {
             type: "group",
             members: data.members,
             onMember: arr,
-            lastContent: IMUI.lastContentRender({
+            lastContent: i.lastContentRender({
               type: data.message.type,
               content: data.message.content,
             }),
@@ -156,7 +166,7 @@ export default {
           };
           this.contacts.push(contact);
         } else {
-          IMUI.appendMessage(data, true);
+          i.appendMessage(data, true);
         }
       });
     },

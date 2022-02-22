@@ -1,4 +1,4 @@
-import API from "../api/api_user";
+import API from "../api/api";
 import Common from "../utils/common";
 
 let handleMessage = async function (message, file, next, socket) {

@@ -1,4 +1,4 @@
-import API from "../api/api_user";
+import API from "../api/api";
 
 //获取用户联系人
 let getUserContact = function () {
