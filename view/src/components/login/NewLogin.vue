@@ -1,41 +1,55 @@
-
 <template>
   <section>
-    <!-- 背景颜色 -->
     <div class="color"></div>
     <div class="color"></div>
     <div class="color"></div>
-    <div class="box">
-      <!-- 背景圆 -->
+    <div class="login-container">
       <div class="circle" style="--x: 0"></div>
       <div class="circle" style="--x: 1"></div>
       <div class="circle" style="--x: 2"></div>
       <div class="circle" style="--x: 3"></div>
       <div class="circle" style="--x: 4"></div>
-      <!-- 登录框 -->
-      <div class="container">
-        <div class="form">
-          <h2>登录</h2>
-          <form>
-            <div class="inputBox">
-              <input type="text" placeholder="用户名" v-model="userName" />
-            </div>
-            <div class="inputBox">
-              <input type="password" placeholder="密码" v-model="password" />
-            </div>
-            <div class="inputBox">
-              <el-button round @click="login" :loading="isBtnLoading">登录</el-button>
-              <!-- <el-button type="submit" value="登录" @click="login" /> -->
-            </div>
-          </form>
-        </div>
-      </div>
+      <el-form
+        :model="ruleForm2"
+        :rules="rules2"
+        status-icon
+        ref="ruleForm2"
+        label-position="left"
+        label-width="0px"
+        class="demo-ruleForm login-page"
+      >
+        <h3 class="title">聊天登录</h3>
+        <el-form-item prop="username">
+          <el-input
+            type="text"
+            v-model="userName"
+            auto-complete="off"
+            placeholder="用户名"
+          ></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input
+            type="password"
+            v-model="password"
+            auto-complete="off"
+            placeholder="密码"
+          ></el-input>
+        </el-form-item>
+        <!-- <el-checkbox v-model="checked" class="rememberme">记住密码</el-checkbox> -->
+        <el-form-item style="width: 100%">
+          <el-button
+            type="primary"
+            style="width: 100%"
+            @click="login"
+            :loading="isBtnLoading"
+            >登录</el-button
+          >
+        </el-form-item>
+      </el-form>
     </div>
   </section>
 </template>
- 
- 
- 
+
 <script>
 import API from "../../api/api";
 import md5 from "js-md5";
@@ -104,15 +118,27 @@ export default {
   },
 };
 </script>
-<style lang="stylus">
-/* 清除浏览器默认边距，
-使边框和内边距的值包含在元素的width和height内 */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
+<style scoped>
+.login-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+.login-page {
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  margin: 180px auto;
+  width: 350px;
+  padding: 35px 35px 15px;
+  background: #fff;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 0 25px #cac6c6;
+}
+label.el-checkbox.rememberme {
+  margin: 0px 0px 15px;
+  text-align: left;
+}
 /* 使用flex布局，让内容垂直和水平居中 */
 section {
   /* 相对定位 */
@@ -158,12 +184,8 @@ section .color:nth-child(3) {
   background: #00d2ff;
 }
 
-.box {
-  position: relative;
-}
-
 /* 背景圆样式 */
-.box .circle {
+.login-container .circle {
   position: absolute;
   background: rgba(255, 255, 255, 0.1);
   /* backdrop-filter属性为一个元素后面区域添加模糊效果 */
@@ -188,7 +210,8 @@ section .color:nth-child(3) {
 
 /* 背景圆动画 */
 @keyframes animate {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(-50px);
   }
 
@@ -197,14 +220,14 @@ section .color:nth-child(3) {
   }
 }
 
-.box .circle:nth-child(1) {
+.login-container .circle:nth-child(1) {
   top: -50px;
   right: -60px;
   width: 100px;
   height: 100px;
 }
 
-.box .circle:nth-child(2) {
+.login-container .circle:nth-child(2) {
   top: 150px;
   left: -100px;
   width: 120px;
@@ -212,7 +235,7 @@ section .color:nth-child(3) {
   z-index: 2;
 }
 
-.box .circle:nth-child(3) {
+.login-container .circle:nth-child(3) {
   bottom: 50px;
   right: -60px;
   width: 80px;
@@ -220,125 +243,17 @@ section .color:nth-child(3) {
   z-index: 2;
 }
 
-.box .circle:nth-child(4) {
+.login-container .circle:nth-child(4) {
   bottom: -80px;
   left: 100px;
   width: 60px;
   height: 60px;
 }
 
-.box .circle:nth-child(5) {
+.login-container .circle:nth-child(5) {
   top: -80px;
   left: 140px;
   width: 60px;
   height: 60px;
-}
-
-/* 登录框样式 */
-.container {
-  position: relative;
-  width: 400px;
-  min-height: 400px;
-  background: rgba(255, 255, 255, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  backdrop-filter: blur(5px);
-  box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.form {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  padding: 50px;
-}
-
-/* 登录标题样式 */
-.form h2 {
-  position: relative;
-  color: #fff;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: 5px;
-  margin-bottom: 30px;
-  cursor: pointer;
-}
-
-/* 登录标题的下划线样式 */
-.form h2::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: -10px;
-  width: 0px;
-  height: 3px;
-  background: #fff;
-  transition: 0.5s;
-}
-
-.form h2:hover:before {
-  width: 53px;
-}
-
-.form .inputBox {
-  width: 100%;
-  margin-top: 20px;
-}
-
-/* 输入框样式 */
-.form .inputBox input {
-  width: 100%;
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  outline: none;
-  border: none;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 16px;
-  letter-spacing: 1px;
-  color: #fff;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-}
-
-.form .inputBox input::placeholder {
-  color: #fff;
-}
-
-/* 登录按钮样式 */
-.form .inputBox button[type='button'] {
-  width: 100%;
-  padding: 10px 20px;
-  outline: none;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 16px;
-  letter-spacing: 1px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-  background: #fff;
-  color: #666;
-  max-width: 100px;
-  margin-bottom: 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.forget {
-  margin-top: 6px;
-  color: #fff;
-  letter-spacing: 1px;
-}
-
-.forget a {
-  color: #fff;
-  font-weight: 600;
-  text-decoration: none;
 }
 </style>

@@ -302,9 +302,9 @@ export default {
 };
 </script>
 <style lang="stylus">
-* {
-  margin: 0;
-}
+// * {
+//   margin: 0;
+// }
 
 .imui-center {
   width: 100vw;
