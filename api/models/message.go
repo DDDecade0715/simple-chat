@@ -96,11 +96,11 @@ func FindMessage(value *Message) (Message, error) {
 	return result, err
 }
 
-func FindMessages(whereFrom *Message, whereContact *Message, page int8) (*MessagePageInfo, error) {
-	var limit int8
+func FindMessages(whereFrom *Message, whereContact *Message, page int64) (*MessagePageInfo, error) {
+	var limit int64
 	limit = 50
 	//查条数
-	var count int8
+	var count int64
 	global.GDB.Model(&Message{}).Where(whereFrom).Or(whereContact).Count(&count)
 	var totalPage float64
 	totalPage = float64(count) / float64(limit)
@@ -117,7 +117,7 @@ func FindMessages(whereFrom *Message, whereContact *Message, page int8) (*Messag
 		Count:     count,
 		PageSize:  limit,
 		Data:      result,
-		TotalPage: int8(math.Ceil(totalPage)),
+		TotalPage: int64(math.Ceil(totalPage)),
 	}
 	return messagePageInfo, err
 }
@@ -130,18 +130,18 @@ func GetGroupsMessage(whereFrom *Message) (contactsMessage *ContactsMessage, err
 }
 
 type MessagePageInfo struct {
-	Page      int8       `json:"page"`
-	Count     int8       `json:"count"`
-	PageSize  int8       `json:"page_size"`
+	Page      int64      `json:"page"`
+	Count     int64      `json:"count"`
+	PageSize  int64      `json:"page_size"`
 	Data      []*Message `json:"data"`
-	TotalPage int8       `json:"total_page"`
+	TotalPage int64      `json:"total_page"`
 }
 
-func FindGroupMessages(whereFrom *Message, page int8) (*MessagePageInfo, error) {
-	var limit int8
+func FindGroupMessages(whereFrom *Message, page int64) (*MessagePageInfo, error) {
+	var limit int64
 	limit = 50
 	//查条数
-	var count int8
+	var count int64
 	global.GDB.Model(&Message{}).Where(whereFrom).Count(&count)
 	var totalPage float64
 	totalPage = float64(count) / float64(limit)
@@ -158,7 +158,7 @@ func FindGroupMessages(whereFrom *Message, page int8) (*MessagePageInfo, error) 
 		Count:     count,
 		PageSize:  limit,
 		Data:      result,
-		TotalPage: int8(math.Ceil(totalPage)),
+		TotalPage: int64(math.Ceil(totalPage)),
 	}
 	return messagePageInfo, err
 }

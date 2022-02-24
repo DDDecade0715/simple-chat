@@ -155,15 +155,15 @@ func SaveMessageByInterface(c *gin.Context) {
 type ChatContact struct {
 	ContactId string `json:"contact_id" binding:"required"`
 	Type      string `json:"type" binding:"required"`
-	Page      int8   `json:"page" binding:"required"`
+	Page      int64  `json:"page" binding:"required"`
 }
 
 type ChatContactMessage struct {
-	Page      int8                  `json:"page"`
-	Count     int8                  `json:"count"`
-	PageSize  int8                  `json:"page_size"`
+	Page      int64                 `json:"page"`
+	Count     int64                 `json:"count"`
+	PageSize  int64                 `json:"page_size"`
 	Data      []*models.MessageChat `json:"data"`
-	TotalPage int8                  `json:"total_page"`
+	TotalPage int64                 `json:"total_page"`
 }
 
 //GetMessages 获取联系人聊天记录
