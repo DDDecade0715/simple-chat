@@ -75,7 +75,7 @@
       :lock-scroll="false"
       style="text-align: center"
       :destroy-on-close="true"
-      width="500px"
+      width="800px"
     >
       <SelectContactVue @close="close" :contact="contact"></SelectContactVue>
     </el-dialog>

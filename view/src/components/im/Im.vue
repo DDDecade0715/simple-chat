@@ -12,6 +12,8 @@
         @change-contact="handleChangeContact"
         @message-click="handleClickMessage"
         :theme="theme"
+        :width="width"
+        :height="height"
       >
         <template #message-title="contact">
           <span class="lemon-container__displayname">{{
@@ -61,6 +63,7 @@ import API from "../../api/api";
 import UserFormVue from "../userinfo/UserForm.vue";
 import ContactInfoVue from "../contactInfo/ContactInfo.vue";
 import VideoPlayer from "@/components/videoPlayer/VideoPlayer.vue";
+//表情包
 import emoji from "../../assets/emoji";
 
 export default {
@@ -74,6 +77,8 @@ export default {
   data() {
     return {
       theme: "default",
+      width: "1060px",
+      height: "890px",
       user: {
         id: 0,
         displayName: "",
@@ -302,14 +307,11 @@ export default {
 };
 </script>
 <style lang="stylus">
-// * {
-//   margin: 0;
-// }
-
 .imui-center {
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(45deg, palegoldenrod, pink, plum);
+  background-color: rgb(192,192,192);
+  // background: linear-gradient(45deg, palegoldenrod, pink, plum);
   // animation: hueRotate 10s infinite alternate;
 }
 
@@ -321,8 +323,8 @@ export default {
 
 .chat-box {
   position: absolute;
-  top: 15%;
-  left: 25%;
+  top: 4%;
+  left: 21%;
 }
 
 .more {
@@ -355,7 +357,7 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  z-index: 10;
+  z-index: 20;
   background-color: #000000;
   opacity: 0.6;
 }

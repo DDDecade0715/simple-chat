@@ -1,36 +1,46 @@
 <template>
-    <div>
-        <video ref="videoPlayer" class="video-js"></video>
-    </div>
+  <div>
+    <video ref="videoPlayer" class="video-js video-format"></video>
+  </div>
 </template>
 
 <script>
-import videojs from 'video.js';
+import videojs from "video.js";
 
 export default {
-    name: "VideoPlayer",
-    props: {
-        options: {
-            type: Object,
-            default() {
-                return {};
-            }
-        }
+  name: "VideoPlayer",
+  props: {
+    options: {
+      type: Object,
+      default() {
+        return {};
+      },
     },
-    data() {
-        return {
-            player: null
-        }
-    },
-    mounted() {
-        this.player = videojs(this.$refs.videoPlayer, this.options, function onPlayerReady() {
-            // console.log('onPlayerReady', this);
-        })
-    },
-    beforeDestroy() {
-        if (this.player) {
-            this.player.dispose()
-        }
+  },
+  data() {
+    return {
+      player: null,
+    };
+  },
+  mounted() {
+    this.player = videojs(
+      this.$refs.videoPlayer,
+      this.options,
+      function onPlayerReady() {
+        // console.log('onPlayerReady', this);
+      }
+    );
+  },
+  beforeDestroy() {
+    if (this.player) {
+      this.player.dispose();
     }
-}
+  },
+};
 </script>
+<style lang="stylus">
+.video-format {
+  width: 600px;
+  height: 600px;
+}
+</style>

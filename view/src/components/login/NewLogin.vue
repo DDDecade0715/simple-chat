@@ -10,10 +10,7 @@
       <div class="circle" style="--x: 3"></div>
       <div class="circle" style="--x: 4"></div>
       <el-form
-        :model="ruleForm2"
-        :rules="rules2"
         status-icon
-        ref="ruleForm2"
         label-position="left"
         label-width="0px"
         class="demo-ruleForm login-page"
